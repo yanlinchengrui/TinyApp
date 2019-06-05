@@ -20,10 +20,19 @@
     <ul>
       <% for (let key in urls) { %>
         <li>
-          <strong><%= key %></strong>: <%= urls[key] %>
-          <form class="form-inline" method="POST" action="/urls/<%= key %>/delete" style="display: inline-block; padding: 5px; margin: auto;">
-            <button type="submit" class="btn btn-warning"> Delete </button>
-          </form>
+          <div class="row" style="padding:0.5px;">
+            <div class="col-5" style="border-bottom:1px solid gray">
+              <strong><a href="/urls/<%= key %>"><%= key %></a></strong>: <%= urls[key] %>
+            </div>
+            <div class="col-auto" style="border-bottom:1px solid gray">
+              <form class="form-inline" method="GET" action="/urls/<%= key %>" style="display: inline-block; padding: 3px;">
+                <button type="submit" class="btn btn-info" style="margin-right:1px; padding:1.6px;">Edit 🤔</button>
+              </form>
+              <form class="form-inline" method="POST" action="/urls/<%= key %>/delete" style="display: inline-block; padding: 3px;">
+                <button type="submit" class="btn btn-warning" style="margin-left:1px; padding:1.6px;">Delete 😱</button>
+              </form>
+            </div>
+          </div>
         </li>
       <% } %>
     </ul>

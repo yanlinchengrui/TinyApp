@@ -63,6 +63,15 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.redirect('/urls');
 });
 
+app.post('/urls/:shortURL', (req, res) => {
+  const short = req.params.shortURL;
+  const long = req.body.longURL;
+  if(long){
+    urlDatabase[short] = long;
+  }
+  res.redirect(`/urls/${short}`);
+});
+
 // catchall route
 app.get('*', (req, res) => res.redirect('/urls'));
 
