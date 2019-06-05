@@ -16,7 +16,7 @@
     <% include ./partials/_header %>
     <a href="/urls/new" style="display: inline-block; margin-bottom: 20px"> Create new TinyURL </a>
 
-    <p> ShortURL: <%= shortURL %> </p>
+    <p> <strong>ShortURL: </strong> <%= shortURL %> </p>
     <form class="form-inline" action="/urls/<%= shortURL %>" method="POST">
       <input class="form-control" type="text" name="longURL" placeholder="<%= longURL %>" style="width: 300px; margin-right: 1em">
       <button type="submit" class="btn btn-primary">Update</button>
