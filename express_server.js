@@ -35,14 +35,14 @@ app.get('/urls', (req, res) => {
   // When sending variables to an EJS template, need to send them inside an object
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"],
+    username: req.cookies['username'],
   };
   res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    username: req.cookies['username'],
   };
   res.render('urls_new', templateVars);
 });
@@ -51,7 +51,7 @@ app.get('/urls/:shortURL', (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies["username"],
+    username: req.cookies['username'],
   };
   // check if the longURL exists, if not then redirect to /urls
   templateVars.longURL ? res.render('urls_show', templateVars) : res.redirect('/urls');
