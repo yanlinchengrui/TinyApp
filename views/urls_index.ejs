@@ -19,7 +19,12 @@
     <h3> My URLs </h3>
     <ul>
       <% for (let key in urls) { %>
-        <li> <strong><%= key %></strong>: <%= urls[key] %> </li>
+        <li>
+          <strong><%= key %></strong>: <%= urls[key] %>
+          <form class="form-inline" method="POST" action="/urls/<%= key %>/delete" style="display: inline-block; padding: 5px; margin: auto;">
+            <button type="submit" class="btn btn-warning"> Delete </button>
+          </form>
+        </li>
       <% } %>
     </ul>
 
