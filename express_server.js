@@ -12,14 +12,19 @@ app.use(cookieParser());
 
 const PORT = 8080; // default port 8080
 
+// const urlDatabase = {
+//   'b2xVn2': 'http://www.lighthouselabs.ca',
+//   '9sm5xK': 'http://www.google.com',
+// };
+
 const urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com',
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
+  "aJ48lW": {
+    id: "aJ48lW",
     email: "user@example.com",
     password: "purple-monkey-dinosaur",
   },
@@ -50,6 +55,16 @@ const getPasswordAndIDByEmail = (email) => {
   return {};
 }
 
+const urlsForUser = (id) => {
+  let urlsResult = {};
+  for(const key in urlDatabase) {
+    if(urlDatabase[key].userID === id) {
+      urlsResult[key] = urlDatabase[key].longURL;
+    }
+  }
+  return urlsResult;
+};
+
 app.get('/', (req, res) => {
   res.send('Hello!');
 });
@@ -64,53 +79,84 @@ app.get('/hello', (req, res) => {
 
 app.get('/urls', (req, res) => {
   // When sending variables to an EJS template, need to send them inside an object
-  let templateVars = {
-    urls: urlDatabase,
-    user: users[req.cookies['user_id']],
-  };
+  const user = users[req.cookies['user_id']];
+  let templateVars = {};
+  if(user) {
+      templateVars = {
+        urls: urlsForUser(user.id),
+        user: user,
+      };
+  }
+  console.log(templateVars);
   res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
-  let templateVars = {
-    user: users[req.cookies['user_id']],
-  };
-  res.render('urls_new', templateVars);
+  const user = users[req.cookies['user_id']];
+  if(user) {
+    res.render('urls_new', {user: user});
+  }
+  else {
+    res.redirect('/login');
+  }
 });
 
 app.get('/urls/:shortURL', (req, res) => {
-  let templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
-    user: users[req.cookies['user_id']],
-  };
-  // check if the longURL exists, if not then redirect to /urls
-  templateVars.longURL ? res.render('urls_show', templateVars) : res.redirect('/urls');
+  if(req.cookies.user_id === urlDatabase[req.params.shortURL].userID) {
+    let templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL,
+      user: users[req.cookies['user_id']],
+    };
+    // check if the longURL exists, if not then redirect to /urls
+    templateVars.longURL ? res.render('urls_show', templateVars) : res.redirect('/urls');
+  }
+  else {
+    res.redirect('/login');
+  }
 });
 
 app.post('/urls', (req, res) => {
   const rand = generateRandomString();
-  urlDatabase[rand] = req.body.longURL;
+  urlDatabase[rand] = {
+    longURL: req.body.longURL,
+    userID: req.cookies.user_id,
+  };
   res.redirect(`/urls/${rand}`);
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  if(urlDatabase[req.params.shortURL] && req.cookies.user_id === urlDatabase[req.params.shortURL].userID) {
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(longURL);
+  }
+  else {
+    res.redirect('/login');
+  }
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect('/urls');
+  if(req.cookies.user_id === urlDatabase[req.params.shortURL].userID) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect('/urls');
+  }
+  else {
+    res.redirect('/login');
+  }
 });
 
 app.post('/urls/:shortURL', (req, res) => {
-  const short = req.params.shortURL;
-  const long = req.body.longURL;
-  if(long) {
-    urlDatabase[short] = long;
+  if(req.cookies.user_id === urlDatabase[req.params.shortURL].userID) {
+    const short = req.params.shortURL;
+    const long = req.body.longURL;
+    if(long) {
+      urlDatabase[short].longURL = long;
+    }
+    res.redirect(`/urls/${short}`);
   }
-  res.redirect(`/urls/${short}`);
+  else {
+    res.redirect('/login');
+  }
 });
 
 app.post('/login', (req, res) => {
