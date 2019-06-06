@@ -65,6 +65,12 @@ const urlsForUser = (id) => {
   return urlsResult;
 };
 
+const checkIfUrlExistsAndUserIdMatches = (req) => {
+  return req.cookies.user_id
+    && urlDatabase[req.params.shortURL]
+    && req.cookies.user_id === urlDatabase[req.params.shortURL].userID;
+}
+
 app.get('/', (req, res) => {
   res.send('Hello!');
 });
@@ -102,7 +108,7 @@ app.get('/urls/new', (req, res) => {
 });
 
 app.get('/urls/:shortURL', (req, res) => {
-  if(req.cookies.user_id === urlDatabase[req.params.shortURL].userID) {
+  if(checkIfUrlExistsAndUserIdMatches(req)) {
     let templateVars = {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
@@ -112,31 +118,36 @@ app.get('/urls/:shortURL', (req, res) => {
     templateVars.longURL ? res.render('urls_show', templateVars) : res.redirect('/urls');
   }
   else {
-    res.redirect('/login');
+    req.cookies.user_id ? res.render('unauthorized', {user: users[req.cookies.user_id]}) : res.render('unauthorized');
   }
 });
 
 app.post('/urls', (req, res) => {
-  const rand = generateRandomString();
-  urlDatabase[rand] = {
-    longURL: req.body.longURL,
-    userID: req.cookies.user_id,
-  };
-  res.redirect(`/urls/${rand}`);
+  if(users[req.cookies.user_id]) {
+    const rand = generateRandomString();
+    urlDatabase[rand] = {
+      longURL: req.body.longURL,
+      userID: req.cookies.user_id,
+    };
+    res.redirect(`/urls/${rand}`);
+  }
+  else {
+    res.render('unauthorized');
+  }
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  if(urlDatabase[req.params.shortURL] && req.cookies.user_id === urlDatabase[req.params.shortURL].userID) {
+  if(checkIfUrlExistsAndUserIdMatches(req)) {
     const longURL = urlDatabase[req.params.shortURL].longURL;
     res.redirect(longURL);
   }
   else {
-    res.redirect('/login');
+    req.cookies.user_id ? res.render('unauthorized', {user: users[req.cookies.user_id]}) : res.render('unauthorized');
   }
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
-  if(req.cookies.user_id === urlDatabase[req.params.shortURL].userID) {
+  if(checkIfUrlExistsAndUserIdMatches(req)) {
     delete urlDatabase[req.params.shortURL];
     res.redirect('/urls');
   }
@@ -146,7 +157,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 });
 
 app.post('/urls/:shortURL', (req, res) => {
-  if(req.cookies.user_id === urlDatabase[req.params.shortURL].userID) {
+  if(checkIfUrlExistsAndUserIdMatches(req)) {
     const short = req.params.shortURL;
     const long = req.body.longURL;
     if(long) {
