@@ -1,13 +1,10 @@
 <a href='/urls'> <h1> TinyApp </h1> </a>
 
-<% if (username) { %>
-  <h3> 😆 Hi <%= username %>, do you want to <form class="form-inline" style="display:inline-block;" action="/logout" method="POST"> <button type="submit" class="btn btn-danger">Logout</button> ?</form> </h3>
+<% if (typeof user !== "undefined") { %>
+  <h3> 😆 Hi <%= user.email %>, do you want to <form class="form-inline" style="display:inline-block;" action="/logout" method="POST"> <button type="submit" class="btn btn-danger">Logout</button> ?</form> </h3>
 <% } else { %>
-  <form class="form-inline" action="/login" method="POST">
-    <div class="form-group mb-2">
-      <label for="username">Username:</label>
-      <input class="form-control" type="text" name="username" placeholder="Your name..." style="width: 300px; margin: 1em">
-      <button type="submit" class="btn btn-primary">Login</button>
-    </div>
-  </form>
+  <h3> 😐 Please
+  <a class="btn btn-danger" href="/register" role="button"> Register </a> or
+  <a class="btn btn-danger" href="/login" role="button"> Login </a>
+  </h3>
 <% } %>

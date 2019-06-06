@@ -17,7 +17,38 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com',
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  }
+};
+
 const generateRandomString = () => Math.random().toString(36).substr(2, 6);
+
+const duplicatedEmail = (email) => {
+  for(const key in users) {
+    if(users[key].email === email) return true;
+  }
+  return false;
+}
+
+const getPasswordAndIDByEmail = (email) => {
+  for(const key in users) {
+    if(users[key].email === email)
+      return {
+        'password': users[key].password,
+        'id': key,
+      };
+  }
+  return {};
+}
 
 app.get('/', (req, res) => {
   res.send('Hello!');
@@ -35,14 +66,14 @@ app.get('/urls', (req, res) => {
   // When sending variables to an EJS template, need to send them inside an object
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies['username'],
+    user: users[req.cookies['user_id']],
   };
   res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
   let templateVars = {
-    username: req.cookies['username'],
+    user: users[req.cookies['user_id']],
   };
   res.render('urls_new', templateVars);
 });
@@ -51,7 +82,7 @@ app.get('/urls/:shortURL', (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies['username'],
+    user: users[req.cookies['user_id']],
   };
   // check if the longURL exists, if not then redirect to /urls
   templateVars.longURL ? res.render('urls_show', templateVars) : res.redirect('/urls');
@@ -76,7 +107,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 app.post('/urls/:shortURL', (req, res) => {
   const short = req.params.shortURL;
   const long = req.body.longURL;
-  if(long){
+  if(long) {
     urlDatabase[short] = long;
   }
   res.redirect(`/urls/${short}`);
@@ -84,15 +115,57 @@ app.post('/urls/:shortURL', (req, res) => {
 
 app.post('/login', (req, res) => {
   // set cookies
-  const name = req.body.username;
-  res.cookie('username', name);
-  res.redirect('/urls');
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if(!duplicatedEmail(email)) {
+    res.sendStatus(403);
+  }
+
+  if(email && password && duplicatedEmail(email)){
+    const passwordAndId = getPasswordAndIDByEmail(email);
+    if(passwordAndId.password === password){
+      res.cookie('user_id', passwordAndId.id);
+      res.redirect('/urls');
+    }
+    else{
+      res.sendStatus(403);
+    }
+  }
 });
 
 app.post('/logout', (req, res) => {
   // set cookies
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
+});
+
+app.get('/register', (req, res) => {
+  res.render('register');
+});
+
+app.post('/register', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if(email && password && !duplicatedEmail(email)) {
+    const id = generateRandomString();
+    users[id] = {
+      id: id,
+      email: email,
+      password: password,
+    }
+    res.cookie('user_id', id);
+    console.log(users);
+    res.redirect('/urls');
+  }
+  else {
+    res.sendStatus(400);
+  }
+});
+
+app.get('/login', (req, res) => {
+  res.render('login');
 });
 
 // catchall route
