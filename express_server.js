@@ -141,20 +141,6 @@ app.get('/urls/:shortURL', (req, res) => {
   }
 });
 
-// app.post('/urls/:shortURL', (req, res) => {
-//   if(checkIfUrlExistsAndUserIdMatches(req)) {
-//     const short = req.params.shortURL;
-//     const long = req.body.longURL;
-//     if(long) {
-//       urlDatabase[short].longURL = long;
-//     }
-//     res.redirect('/urls');
-//   }
-//   else {
-//     res.status(403).send('Dont do that! You are not allowed!\n');
-//   }
-// });
-
 app.put('/urls/:shortURL', (req, res) => {
   if(checkIfUrlExistsAndUserIdMatches(req)) {
     const short = req.params.shortURL;
@@ -168,16 +154,6 @@ app.put('/urls/:shortURL', (req, res) => {
     res.status(403).send('Don\'t do that! You are not allowed!\n');
   }
 });
-
-// app.post('/urls/:shortURL/delete', (req, res) => {
-//   if(checkIfUrlExistsAndUserIdMatches(req)) {
-//     delete urlDatabase[req.params.shortURL];
-//     res.redirect('/urls');
-//   }
-//   else {
-//     res.status(403).send('Dont do that! You are not allowed!\n');
-//   }
-// });
 
 app.delete('/urls/:shortURL', (req, res) => {
   if(checkIfUrlExistsAndUserIdMatches(req)) {
