@@ -11,6 +11,7 @@
 - bcrypt
 - body-parser
 - cookie-session
+- morgan
 
 ## Getting started
 
