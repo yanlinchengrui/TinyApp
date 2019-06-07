@@ -12,23 +12,19 @@
 
   <body style="font-size:20px; padding:50px;">
 
-    <!-- Add EJS code here -->
     <% include ./partials/_header %>
-    <a href="/urls/new" style="display: inline-block; margin-bottom: 20px"> Create new TinyURL </a>
 
     <% if (typeof user !== "undefined") { %>
       <h3> My URLs: </h3>
-      <ul style="list-style: none;">
+      <ul>
         <% for (let key in urls) { %>
           <li>
             <div class="row" style="padding:0.5px;">
               <div class="col-5" style="border-bottom:1px solid gray">
-                <strong><a href="/urls/<%= key %>"><%= key %></a></strong>: <%= urls[key] %>
+                <strong><a href="/u/<%= key %>"><%= key %></a></strong>: <%= urls[key] %>
               </div>
               <div class="col-auto" style="border-bottom:1px solid gray">
-                <form class="form-inline" method="GET" action="/urls/<%= key %>" style="display: inline-block; padding: 3px;">
-                  <button type="submit" class="btn btn-info" style="padding:1.6px;">Edit 🤔</button>
-                </form>
+                <a class="btn btn-info" href="/urls/<%= key %>" role="button" style="padding:1.6px;"> Edit 🤔 </a>
                 <form class="form-inline" method="POST" action="/urls/<%= key %>/delete" style="display: inline-block; padding: 3px;">
                   <button type="submit" class="btn btn-warning" style="padding:1.6px;">Delete 😱</button>
                 </form>
