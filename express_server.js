@@ -20,8 +20,8 @@ app.use(methodOverride('_method'))
 const PORT = 8080; // default port 8080
 
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW", visited: 0},
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW", visited: 0}
 };
 
 const users = {
@@ -98,6 +98,7 @@ app.post('/urls', (req, res) => {
     urlDatabase[rand] = {
       longURL: req.body.longURL,
       userID: req.session.user_id,
+      visited: 0,
     };
     res.redirect(`/urls/${rand}`);
   }
@@ -119,6 +120,7 @@ app.get('/urls/new', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   const url = urlDatabase[req.params.shortURL];
   if(url) {
+    ++urlDatabase[req.params.shortURL].visited;
     res.redirect(url.longURL);
   }
   else {
@@ -132,6 +134,7 @@ app.get('/urls/:shortURL', (req, res) => {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
       user: users[req.session.user_id],
+      visited: urlDatabase[req.params.shortURL].visited
     };
     // check if the longURL exists, if not then redirect to /urls
     templateVars.longURL ? res.render('urls_show', templateVars) : res.redirect('/urls');
