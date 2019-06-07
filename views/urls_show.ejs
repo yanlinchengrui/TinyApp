@@ -14,7 +14,7 @@
 
     <% include ./partials/_header %>
 
-    <p> <strong>Visited(NOT UNIQUE 😢): </strong> <%= visited %> </p>
+    <p> <strong>Visited(Unique?🤪): </strong> <%= visited %> </p>
 
     <p> <strong>ShortURL: </strong> <%= shortURL %> </p>
     <form class="form-inline" action="/urls/<%= shortURL %>?_method=PUT" method="POST">

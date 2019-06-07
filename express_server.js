@@ -20,8 +20,8 @@ app.use(methodOverride('_method'))
 const PORT = 8080; // default port 8080
 
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW", visited: 0},
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW", visited: 0}
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW", visited: 0, visitor: []},
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW", visited: 0, visitor: []},
 };
 
 const users = {
@@ -99,6 +99,7 @@ app.post('/urls', (req, res) => {
       longURL: req.body.longURL,
       userID: req.session.user_id,
       visited: 0,
+      visitor: [],
     };
     res.redirect(`/urls/${rand}`);
   }
@@ -119,8 +120,26 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/u/:shortURL', (req, res) => {
   const url = urlDatabase[req.params.shortURL];
+
   if(url) {
-    ++urlDatabase[req.params.shortURL].visited;
+    if(req.session.user_id) {
+      let notVisited = true;
+      url.visitor.forEach((visitor) => {
+        if(visitor === req.session.user_id) {
+          notVisited = false;
+        }
+      });
+      // if user_id is not in visitor list, increment visited number
+      if(notVisited) {
+        url.visitor.push(req.session.user_id);
+        ++url.visited;
+      }
+    } else{
+      // if user_id does not exists, increment visited number and set new session to visitor
+      req.session.user_id = generateRandomString();
+      url.visitor.push(req.session.user_id);
+      ++url.visited;
+    }
     res.redirect(url.longURL);
   }
   else {
