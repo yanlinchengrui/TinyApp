@@ -85,7 +85,6 @@ app.get('/urls', (req, res) => {
         user: user,
       };
   }
-  console.log(templateVars);
   res.render('urls_index', templateVars);
 });
 
@@ -208,7 +207,6 @@ app.post('/register', (req, res) => {
       password: bcrypt.hashSync(password, 10),
     }
     req.session.user_id = id;
-    console.log(users);
     res.redirect('/urls');
   }
   else {
