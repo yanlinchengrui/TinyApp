@@ -170,22 +170,22 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  // set session
   const email = req.body.email;
   const password = req.body.password;
 
   if(email && password && getPasswordAndIdByEmail(email)){
     const passwordAndId = getPasswordAndIdByEmail(email);
     if(bcrypt.compareSync(password, passwordAndId.password)){
+      // set session
       req.session.user_id = passwordAndId.id;
       res.redirect('/urls');
     }
     else{
-      res.status(403).send('Invalid email or password...');
+      res.status(403).send('Invalid Email or password...');
     }
   }
   else {
-    res.status(403).send('Invalid email or password...');
+    res.status(403).send('Invalid Email or password...');
   }
 });
 
