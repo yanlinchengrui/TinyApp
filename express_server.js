@@ -6,10 +6,14 @@ const morgan = require('morgan');
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
 
+const methodOverride = require('method-override')
+
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use(cookieSession({ keys: ['pepepe'] }));
+
+app.use(methodOverride('_method'))
 
 /*          const and functions         */
 
@@ -24,12 +28,12 @@ const users = {
   "aJ48lW": {
     id: "aJ48lW",
     email: "user@example.com",
-    password: bcrypt.hashSync("purple-monkey-dinosaur", 10),
+    password: bcrypt.hashSync("123", 10),
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: bcrypt.hashSync("dishwasher-funk", 10),
+    password: bcrypt.hashSync("456", 10),
   }
 };
 
@@ -137,7 +141,21 @@ app.get('/urls/:shortURL', (req, res) => {
   }
 });
 
-app.post('/urls/:shortURL', (req, res) => {
+// app.post('/urls/:shortURL', (req, res) => {
+//   if(checkIfUrlExistsAndUserIdMatches(req)) {
+//     const short = req.params.shortURL;
+//     const long = req.body.longURL;
+//     if(long) {
+//       urlDatabase[short].longURL = long;
+//     }
+//     res.redirect('/urls');
+//   }
+//   else {
+//     res.status(403).send('Dont do that! You are not allowed!\n');
+//   }
+// });
+
+app.put('/urls/:shortURL', (req, res) => {
   if(checkIfUrlExistsAndUserIdMatches(req)) {
     const short = req.params.shortURL;
     const long = req.body.longURL;
@@ -147,17 +165,27 @@ app.post('/urls/:shortURL', (req, res) => {
     res.redirect('/urls');
   }
   else {
-    res.status(403).send('Dont do that! You are not allowed!\n');
+    res.status(403).send('Don\'t do that! You are not allowed!\n');
   }
 });
 
-app.post('/urls/:shortURL/delete', (req, res) => {
+// app.post('/urls/:shortURL/delete', (req, res) => {
+//   if(checkIfUrlExistsAndUserIdMatches(req)) {
+//     delete urlDatabase[req.params.shortURL];
+//     res.redirect('/urls');
+//   }
+//   else {
+//     res.status(403).send('Dont do that! You are not allowed!\n');
+//   }
+// });
+
+app.delete('/urls/:shortURL', (req, res) => {
   if(checkIfUrlExistsAndUserIdMatches(req)) {
     delete urlDatabase[req.params.shortURL];
     res.redirect('/urls');
   }
   else {
-    res.status(403).send('Dont do that! You are not allowed!\n');
+    res.status(403).send('Don\'t do that! You are not allowed!\n');
   }
 });
 

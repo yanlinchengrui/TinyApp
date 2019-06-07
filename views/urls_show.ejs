@@ -15,7 +15,7 @@
     <% include ./partials/_header %>
 
     <p> <strong>ShortURL: </strong> <%= shortURL %> </p>
-    <form class="form-inline" action="/urls/<%= shortURL %>" method="POST">
+    <form class="form-inline" action="/urls/<%= shortURL %>?_method=PUT" method="POST">
       <input class="form-control" type="text" name="longURL" placeholder="<%= longURL %>" style="width: 300px; margin-right: 1em">
       <button type="submit" class="btn btn-primary">Update</button>
     </form>
